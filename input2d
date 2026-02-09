@@ -5,20 +5,13 @@ MU = 2.0*R/Re
 RHO = 1.0
 
 // grid spacing parameters
-MAX_LEVELS = 3        // reduced for lower memory
-REF_RATIO  = 2        // reduced refinement ratio between levels
-REF_RATIO_FINEST = 2  // refinement ratio for the finest level.
+MAX_LEVELS = 2        // maximum number of levels in locally refined grid
+REF_RATIO  = 4        // refinement ratio between levels
+REF_RATIO_FINEST = 4  // refinement ratio for the finest level.
 
-N = 16                                   // coarsest grid spacing
+N = 256                                   // coarsest grid spacing
 NFINEST = (REF_RATIO^(MAX_LEVELS - 1))*N  // finest   grid spacing
-L = 16
-
-// Initial control volume parameters (required by example.cpp)
-InitHydroForceBox_0 {
-   lower_left_corner  = -0.65, -0.65, 0.0
-   upper_right_corner = 0.65, 0.65, 0.0
-   init_velocity      = 0.0, 0.0, 0.0
-}
+L = 32
 
 VelocityInitialConditions {
    function_0 = "0.0"
@@ -63,27 +56,23 @@ VelocityBcCoefs_1 {
 }
 
 
-
-
-
-
 // Simulation Parameters
 DELTA_FUNCTION       = "IB_4"
 SOLVER_TYPE          = "STAGGERED"
 START_TIME           =   0.0e0     // initial simulation time
-END_TIME             =   100.0    // final simulation time
+END_TIME             =   130.0e0    // final simulation time
 GROW_DT              =   2.0e0     // growth factor for timesteps
 MAX_INTEGRATOR_STEPS =   10000000000  // max number of simulation timesteps
-REGRID_INTERVAL      =   5
+REGRID_INTERVAL      =   1
 CFL_MAX              =   0.3   
 NUM_INS_CYCLES       =   1
 CONVECTIVE_OP_TYPE   = "PPM"                      // convective differencing discretization type
 CONVECTIVE_FORM      = "ADVECTIVE"                // how to compute the convective terms
 NORMALIZE_PRESSURE   = FALSE     
-VORTICITY_TAGGING    = TRUE                       // keep AMR but refine less aggressively
-TAG_BUFFER           = 2                          // smaller refined buffer -> fewer refined cells
-REGRID_CFL_INTERVAL  = 0.5                        // regrid whenever any material point could have moved 0.5 meshwidths since previous regrid
-DT_MAX               = 0.0005
+VORTICITY_TAGGING    = TRUE                       // whether to tag cells for refinement based on vorticity thresholds
+TAG_BUFFER           = 2                          // size of tag buffer used by grid generation algorithm
+REGRID_CFL_INTERVAL  = 0.3                        // regrid whenever any material point could have moved 0.5 meshwidths since previous regrid
+DT_MAX               = 0.002
 NUM_CYCLES           = 1
 OUTPUT_U             = TRUE
 OUTPUT_P             = FALSE
@@ -103,10 +92,6 @@ IBHierarchyIntegrator {
    num_cycles     = NUM_INS_CYCLES
    delta_fcn      = DELTA_FUNCTION
    enable_loging  = ENABLE_LOGGING
-
-   // Allow adaptive time steps (dt can decrease as the flow accelerates / after regridding).
-   error_on_dt_change = FALSE
-   warn_on_dt_change  = FALSE
 }
 
 ConstraintIBMethod {
@@ -115,10 +100,6 @@ ConstraintIBMethod {
    num_INS_cycles           = NUM_CYCLES
    needs_divfree_projection = FALSE
    rho_solid                = RHO
-
-   // Options to calculate the structure's momenta (required for drag/rigid body output)
-   calculate_structure_linear_mom       = TRUE
-   calculate_structure_rotational_mom   = TRUE
    
    PrintOutput {
    print_output          = TRUE               //default false
@@ -160,7 +141,7 @@ INSStaggeredHierarchyIntegrator {
    cfl                        = CFL_MAX
    dt_max                     = DT_MAX
    using_vorticity_tagging    = VORTICITY_TAGGING
-   vorticity_abs_thresh       = 0.5 , 1 , 2
+   vorticity_rel_thresh       = 0.25
    tag_buffer                 = TAG_BUFFER
    output_U                   = OUTPUT_U
    output_P                   = OUTPUT_P
@@ -267,11 +248,6 @@ ConstraintIBKinematics {
       base_filename               = "cylinder2d"
   }                 
 
-          
-
-
-
-
 
 Main {
 // log file parameters
@@ -280,7 +256,7 @@ Main {
 
 // visualization dump parameters
    viz_writer            = "VisIt","Silo"
-   viz_dump_interval       = 50    //zero to turn off
+   viz_dump_interval       = 100    //zero to turn off
    viz_dump_dirname      = "viz_cylinder2d"
    visit_number_procs_per_file = 1
 
@@ -300,7 +276,7 @@ Main {
 }
 
 CartesianGeometry {
-   domain_boxes = [ (0,0) , (63 , 31) ]
+   domain_boxes = [ (0,0) , (N , N/2) ]
    x_lo         = -8.0, -8.0         // lower end of computational domain.
    x_up         =  24.0, 8.0         // upper end of computational domain.
    periodic_dimension = 0, 0
@@ -313,7 +289,10 @@ GriddingAlgorithm {
    max_levels = MAX_LEVELS           // Maximum number of levels in hierarchy.
    ratio_to_coarser {
       level_1 = REF_RATIO,REF_RATIO  // vector ratio to next coarser level
-      level_2 = REF_RATIO_FINEST,REF_RATIO_FINEST
+      level_2 = REF_RATIO, REF_RATIO
+      level_3 = REF_RATIO_FINEST,REF_RATIO_FINEST 
+      level_4 = REF_RATIO_FINEST,REF_RATIO_FINEST
+      level_5 = REF_RATIO_FINEST,REF_RATIO_FINEST
    }
 
    largest_patch_size {
