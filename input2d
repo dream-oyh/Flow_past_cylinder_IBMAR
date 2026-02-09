@@ -13,6 +13,13 @@ N = 256                                   // coarsest grid spacing
 NFINEST = (REF_RATIO^(MAX_LEVELS - 1))*N  // finest   grid spacing
 L = 32
 
+// Initial control volume parameters (required by example.cpp)
+InitHydroForceBox_0 {
+   lower_left_corner  = -0.65, -0.65, 0.0
+   upper_right_corner = 0.65, 0.65, 0.0
+   init_velocity      = 0.0, 0.0, 0.0
+}
+
 VelocityInitialConditions {
    function_0 = "0.0"
    function_1 = "0.0"
@@ -92,6 +99,10 @@ IBHierarchyIntegrator {
    num_cycles     = NUM_INS_CYCLES
    delta_fcn      = DELTA_FUNCTION
    enable_loging  = ENABLE_LOGGING
+
+   // Allow adaptive time steps (dt can decrease as the flow accelerates / after regridding).
+   error_on_dt_change = FALSE
+   warn_on_dt_change  = FALSE
 }
 
 ConstraintIBMethod {
@@ -100,6 +111,10 @@ ConstraintIBMethod {
    num_INS_cycles           = NUM_CYCLES
    needs_divfree_projection = FALSE
    rho_solid                = RHO
+
+   // Options to calculate the structure's momenta (required for drag/rigid body output)
+   calculate_structure_linear_mom       = TRUE
+   calculate_structure_rotational_mom   = TRUE
    
    PrintOutput {
    print_output          = TRUE               //default false
