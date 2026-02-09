@@ -18,3 +18,4 @@ Torque_CV*
 viz_cylinder2d
 restart_IB2d
 *.visit
+*.svg
