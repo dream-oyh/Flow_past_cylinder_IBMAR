@@ -15,3 +15,6 @@ Dump--Cylinder
 Drag_CV*
 Torque_CV*
 *.csv
+viz_cylinder2d
+restart_IB2d
+*.visit
