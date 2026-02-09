@@ -267,7 +267,7 @@ Main {
 
 // visualization dump parameters
    viz_writer            = "VisIt","Silo"
-   viz_dump_interval       = 100    //zero to turn off
+   viz_dump_interval       = 10    //zero to turn off
    viz_dump_dirname      = "viz_cylinder2d"
    visit_number_procs_per_file = 1
 
@@ -287,9 +287,9 @@ Main {
 }
 
 CartesianGeometry {
-   domain_boxes = [ (0,0) , (N , N/2) ]
-   x_lo         = -8.0, -8.0         // lower end of computational domain.
-   x_up         =  24.0, 8.0         // upper end of computational domain.
+   domain_boxes = [ (0,0) , (N , N) ]
+   x_lo         = -30.0, -30.0         // lower end of computational domain.
+   x_up         =  30.0, 30.0         // upper end of computational domain.
    periodic_dimension = 0, 0
 }
 

@@ -71,3 +71,23 @@ cd vertex
 cd vertex
 python plot_vertex.py ../cylinder2d.vertex --backend matplotlib --out cylinder2d.svg --max-points 20000 --stride 100
 ```
+
+## 静态矩形障碍物（.npy -> .vertex）
+
+脚本：`generate_rect_obstacles_vertex.py`
+
+输入：
+- `centers.npy`：形状 `(N,2)`（或更多列，只取前两列），每行是矩形中心 `(x,y)`
+- `sizes.npy`：形状 `(N,)` / `(N,1)` / `(N,2)`，每行是矩形尺寸 `(w,h)`；如果只有一个值则认为 `w=h`
+
+示例：
+
+```sh
+cd vertex
+python3 generate_rect_obstacles_vertex.py \
+  --centers ./terrain1/static_obstacle_centers.npy \
+  --sizes ./terrain1/static_obstacle_sizes.npy \
+  --out ../static_obstacles.vertex
+
+python3 plot_vertex.py ../static_obstacles.vertex --backend svg --out static_obstacles.svg --max-points 200000
+```

@@ -202,7 +202,7 @@ def _write_vertex(path: Path, points: Iterable[tuple[float, float]]) -> None:
     with path.open("w", encoding="utf-8") as f:
         f.write(f"{len(pts)}\n")
         for x, y in pts:
-            f.write(f"{x:.16g}\t{y:.16g}\n")
+            f.write(f"{x:.9f}\t{y:.9f}\n")
 
 
 def main(argv: list[str] | None = None) -> int:
