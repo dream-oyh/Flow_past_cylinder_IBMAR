@@ -1,0 +1,16 @@
+visit_*
+*.samrai
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+*.DS_Store
+*.idea/
+*.vscode/
+*.env
+proc.*
+Dump--Cylinder
+*.o
+Drag_CV*
+Torque_CV*
